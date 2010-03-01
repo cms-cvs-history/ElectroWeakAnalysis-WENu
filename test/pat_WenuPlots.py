@@ -40,15 +40,6 @@ process.load("PhysicsTools.PatAlgos.patSequences_cff")
 #process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
 ##
 #
-# for ecal isolation: set the correct name of the ECAL rechit collection
-# 
-#process.eleIsoDepositEcalFromHits.ExtractorPSet.barrelEcalHits = cms.InputTag("reducedEcalRecHitsEB", "", "RECO")
-#process.eleIsoDepositEcalFromHits.ExtractorPSet.endcapEcalHits = cms.InputTag("reducedEcalRecHitsEE", "", "RECO")
-#
-#
-#process.eidRobustHighEnergy.reducedBarrelRecHitCollection = cms.InputTag("reducedEcalRecHitsEB", "", "RECO")
-#process.eidRobustHighEnergy.reducedEndcapRecHitCollection = cms.InputTag("reducedEcalRecHitsEE", "", "RECO")     
-
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ## MET creation     <=== WARNING: YOU MAY WANT TO MODIFY THIS PART OF THE CODE       %%%%%%%%%%%%%
 ##                                specify the names of the MET collections that you need here %%%%
@@ -68,17 +59,6 @@ process.makePatMETs = cms.Sequence(process.patMETCorrections * process.patMETs *
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ## modify the final pat sequence: keep only electrons + METS (muons are needed for met corrections)
 process.load("RecoEgamma.EgammaIsolationAlgos.egammaIsolationSequence_cff")
-#process.electronEcalRecHitIsolationLcone.ecalBarrelRecHitProducer = cms.InputTag("reducedEcalRecHitsEB")
-#process.electronEcalRecHitIsolationScone.ecalBarrelRecHitProducer = cms.InputTag("reducedEcalRecHitsEB")
-#process.electronEcalRecHitIsolationLcone.ecalEndcapRecHitProducer = cms.InputTag("reducedEcalRecHitsEE")
-#process.electronEcalRecHitIsolationScone.ecalEndcapRecHitProducer = cms.InputTag("reducedEcalRecHitsEE")
-#
-#process.electronEcalRecHitIsolationLcone.ecalBarrelRecHitCollection = cms.InputTag("")
-#process.electronEcalRecHitIsolationScone.ecalBarrelRecHitCollection = cms.InputTag("")
-#process.electronEcalRecHitIsolationLcone.ecalEndcapRecHitCollection = cms.InputTag("")
-#process.electronEcalRecHitIsolationScone.ecalEndcapRecHitCollection = cms.InputTag("")
-#
-#
 process.patElectronIsolation = cms.Sequence(process.egammaIsolationSequence)
 
 process.patElectrons.isoDeposits = cms.PSet()
@@ -142,6 +122,10 @@ process.wenuFilter = cms.EDFilter('WenuCandidateFilter',
                                   METCut = cms.untracked.double(0.),
                                   vetoSecondElectronEvents = cms.untracked.bool(False),
                                   ETCut2ndEle = cms.untracked.double(20.),
+                                  # some extras for 2nd electron cuts - uncomment if you don't want them
+                                  vetoSecondElectronIDType = cms.untracked.string("eidRobustLoose"),
+                                  vetoSecondElectronIDSign = cms.untracked.string("="),
+                                  vetoSecondElectronIDValue = cms.untracked.double(1.),
                                   # trigger here
                                   useTriggerInfo = cms.untracked.bool(False),
                                   triggerCollectionTag = cms.untracked.InputTag("TriggerResults","",HLT_process_name),
@@ -154,7 +138,11 @@ process.wenuFilter = cms.EDFilter('WenuCandidateFilter',
                                   useValidFirstPXBHit = cms.untracked.bool(False),
                                   useConversionRejection = cms.untracked.bool(False),
                                   useExpectedMissingHits = cms.untracked.bool(False),
-                                  maxNumberOfExpectedMissingHits = cms.untracked.int32(2),
+                                  maxNumberOfExpectedMissingHits = cms.untracked.int32(1),
+                                  # calculate some new cuts
+                                  calculateValidFirstPXBHit = cms.untracked.bool(True),
+                                  calculateConversionRejection = cms.untracked.bool(True),
+                                  calculateExpectedMissingHits = cms.untracked.bool(True),
                                   # electrons and MET
                                   electronCollectionTag = cms.untracked.InputTag("patElectrons","","PAT"),
                                   metCollectionTag = cms.untracked.InputTag(myDesiredMetCollection,"","PAT"),
@@ -216,10 +204,11 @@ process.plotter = cms.EDAnalyzer('WenuPlots',
                                  usePrecalcIDType = cms.untracked.string('eidTight'),
                                  usePrecalcIDSign = cms.untracked.string('='),
                                  usePrecalcIDValue = cms.untracked.double(1),
-                                 # selections cuts on the fly
-                                 # ..  should be there even not in use
-                                 # ..  they are not used if usePrecalcID = true
-                                 #
+                                 # preselection criteria
+                                 useConversionRejection = cms.untracked.bool(False),
+                                 useValidFirstPXBHit =  cms.untracked.bool(False),
+                                 useExpectedMissingHits = cms.untracked.bool(False),
+                                 maxNumberOfExpectedMissingHits = cms.untracked.int32(1),
                                  #
                                  wenuCollectionTag = cms.untracked.InputTag(
     "wenuFilter","selectedWenuCandidates","PAT")
