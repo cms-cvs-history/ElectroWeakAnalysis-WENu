@@ -44,26 +44,8 @@ process.options = cms.untracked.PSet(
 # source
 process.source = cms.Source("PoolSource", 
      fileNames = cms.untracked.vstring(
-    # SOME DATA FILE TO BE PUT HERE
-    #'rfio:/castor/cern.ch/user/r/rompotis/DATA_STUDIES/Spring10/sample_WminusToENu-CTEQ66-powheg_Spring10-START3X_V26_AODSIM-v2.root',
-    #'file:rfio:/castor/cern.ch/user/r/rompotis/DATA_STUDIES/Spring10/sample_WenuSpring10START3X_V26_S09-v1_AODSIM.root',
-#    '/store/data/Commissioning10/MinimumBias/RECO/SD_EG-Jun14thSkim_v1/0149/FEDC34AB-7F84-DF11-A007-00261894385A.root'
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/FE96AFA9-C678-DF11-9E4C-003048F0E7FC.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/F266F2FA-BE78-DF11-BEB4-003048F0E81E.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/EA166B12-C378-DF11-9BEC-003048CF6334.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/E8CCAFFA-BE78-DF11-8D0B-003048F0E81E.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/E2B13F9F-C978-DF11-B42A-003048F0E81E.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/DC224012-C378-DF11-B414-003048CF6334.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/D449BF0F-C378-DF11-AB42-003048F0E81E.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/D084A5EF-CA78-DF11-B000-003048F0E186.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/C892F555-C378-DF11-919F-003048F0E81E.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/C842530C-C378-DF11-BD97-003048CF632E.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/C828CC0C-C378-DF11-B72D-003048CF632E.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/BE8B579A-C978-DF11-BB94-003048CF6334.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/B0A78AFA-BE78-DF11-88A2-003048CF6334.root',
-#    '/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/AC3549F8-BE78-DF11-B07B-003048F0E186.root',
-#    'rfio:/castor/cern.ch/cms/store/data/Run2010A/EG/RECO/Jun14thReReco_v1/0001/FE96AFA9-C678-DF11-9E4C-003048F0E7FC.root'
-    'rfio:/castor/cern.ch/cms/store/data/Run2010A/EG/RECO/v4/000/140/359/B84453AC-1C92-DF11-B1F8-001617E30D52.root',
+ #   'rfio:/castor/cern.ch/cms/store/data/Run2010B/Electron/RECO/PromptReco-v2/000/147/048/F08487C4-52CE-DF11-AB31-0030487CD7C6.root'
+    'file:test.root'
     )
 )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
@@ -72,8 +54,8 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 ## global tags:
-process.GlobalTag.globaltag = cms.string('GR_R_36X_V12A::All') # GLOBAL TAG FOR DATA
-
+#process.GlobalTag.globaltag = cms.string('GR_R_36X_V12A::All') # GLOBAL TAG FOR DATA
+process.GlobalTag.globaltag = cms.string('GR_R_38X_V13A::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 
@@ -120,9 +102,82 @@ process.makePatMETs = cms.Sequence(process.caloMET*process.tcMET*process.pfMET)
 ## modify the final pat sequence: keep only electrons + METS (muons are needed for met corrections)
 process.load("RecoEgamma.EgammaIsolationAlgos.egammaIsolationSequence_cff")
 #process.patElectronIsolation = cms.Sequence(process.egammaIsolationSequence)
+# user isolations definitions:
+#process.highestPtTrackIso = cms.EDProducer("EgammaElectronTkIsolationProducer",
+#                                               absolut = cms.bool(True),
+#                                               trackProducer = cms.InputTag("generalTracks"),
+#                                               intRadiusBarrel = cms.double(0.015),
+#                                               intRadiusEndcap = cms.double(0.015),
+#                                               stripBarrel = cms.double(0.015),
+#                                               stripEndcap = cms.double(0.015),
+#                                               electronProducer = cms.InputTag("gsfElectrons"),
+#                                               extRadius = cms.double(0.3),
+#                                               ptMin = cms.double(0.7),
+#                                               maxVtxDist = cms.double(0.2),
+#                                               BeamspotProducer = cms.InputTag("offlineBeamSpot"),
+#                                               maxVtxDistXY     = cms.double(9999.0),
+#                                               useHighestPtTrack   = cms.bool(True),
+#                                           )
+###############################################
+#process.highestEtRecHitEcalIso = cms.EDProducer("EgammaEcalRecHitIsolationProducer",
+                                       # this is AOD names
+                                       # ecalBarrelRecHitProducer = cms.InputTag("reducedEcalRecHitsEB"),
+                                       # ecalBarrelRecHitCollection = cms.InputTag(""),
+                                       # ecalEndcapRecHitProducer = cms.InputTag("reducedEcalRecHitsEE"),
+                                       # ecalEndcapRecHitCollection = cms.InputTag(""),
+                                       # this is RECO set up
+#                                         ecalBarrelRecHitProducer = cms.InputTag("ecalRecHit"),
+#                                         ecalBarrelRecHitCollection = cms.InputTag("EcalRecHitsEB"),
+#                                         ecalEndcapRecHitProducer = cms.InputTag("ecalRecHit"),
+#                                         ecalEndcapRecHitCollection = cms.InputTag("EcalRecHitsEE"),
+                                        #useNumCrystals = cms.bool(False),
+                                        #intRadiusBarrel = cms.double(0.045),
+                                        #intRadiusEndcap = cms.double(0.070),
+                                        #jurassicWidth = cms.double(0.02),    #dEta strip width
+#                                        useNumCrystals = cms.bool(True),
+#                                        intRadiusBarrel = cms.double(3.0),
+#                                        intRadiusEndcap = cms.double(3.0),
+#                                        jurassicWidth = cms.double(1.5),    #dEta strip width
+#                                        extRadius = cms.double(0.3),
+#                                        etMinBarrel = cms.double(0.0),
+#                                        eMinBarrel = cms.double(0.08),
+#                                        etMinEndcap = cms.double(0.100),
+#                                        eMinEndcap = cms.double(0.0),
+#                                        
+#                                        useIsolEt = cms.bool(True),
+#                                        tryBoth   = cms.bool(True),
+#                                        subtract  = cms.bool(False),
+#                                        vetoClustered  = cms.bool(False),
+#                                        useSingleRecHit = cms.bool(True),
+#                                        emObjectProducer = cms.InputTag("gsfElectrons")
+#                                        )
+#############################
+#process.highestEtTowerHcalIso = cms.EDProducer("EgammaTowerIsolationProducer",
+#                                       absolut = cms.bool(True),
+#                                       intRadius = cms.double(0.15), # to be orthogonal with the H/E ID cut
+#                                       extRadius = cms.double(0.3),
+#                                       towerProducer = cms.InputTag("towerMaker"),
+#                                       etMin = cms.double(0.0),
+#                                       Depth = cms.int32(-1),
+#                                       useSingleTower = cms.bool(True),
+#                                       emObjectProducer = cms.InputTag("gsfElectrons")
+#                                       )
+
+process.patElectrons.userIsolation = cms.PSet(
+#           tracker = cms.PSet(
+#                src = cms.InputTag("highestPtTrackIso"),
+#                        ),
+#                   ecal = cms.PSet(
+#                src = cms.InputTag("highestEtRecHitEcalIso"),
+#                        ),
+#                  hcal = cms.PSet(
+#                src = cms.InputTag("highestEtTowerHcalIso"),
+#                        ),
+               )
+
 
 process.patElectrons.isoDeposits = cms.PSet()
-process.patElectrons.userIsolation = cms.PSet()
+#process.patElectrons.userIsolation = cms.PSet()
 process.patElectrons.addElectronID = cms.bool(True)
 process.patElectrons.electronIDSources = cms.PSet(
     simpleEleId95relIso= cms.InputTag("simpleEleId95relIso"),
@@ -159,7 +214,9 @@ process.simpleEleId70cIso.dataMagneticFieldSetUp = cms.bool(True)
 process.simpleEleId60cIso.dataMagneticFieldSetUp = cms.bool(True)
 #
 process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
-process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons)
+process.makePatElectrons = cms.Sequence(
+    #process.highestPtTrackIso*process.highestEtRecHitEcalIso*process.highestEtTowerHcalIso*
+                                        process.patElectronIDs*process.patElectrons)
 # process.makePatMuons may be needed depending on how you calculate the MET
 process.makePatCandidates = cms.Sequence(process.makePatElectrons+process.makePatMETs)
 process.patDefaultSequence = cms.Sequence(process.makePatCandidates)
@@ -172,10 +229,14 @@ process.patDefaultSequence = cms.Sequence(process.makePatCandidates)
 ## WARNING: you may want to modify this item:
 HLT_process_name = "HLT"   # REDIGI for the Spring10 production traditional MC / HLT for the powheg samples or data
 # trigger path selection
-HLT_path_name     = "HLT_Photon10_L1R" #= "HLT_Ele15_LW_L1R" #
+HLT_path_name   = "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2"
 # trigger filter name
-HLT_filter_name  =  "hltL1NonIsoHLTNonIsoSinglePhotonEt10HcalIsolFilter"
-#
+HLT_filter_name = "hltL1NonIsoHLTNonIsoSingleElectronEt17TighterEleIdIsolTrackIsolFilter"
+
+HLT_path_name_1 = "HLT_Ele22_SW_TighterCaloIdIsol_L1R_v1"
+HLT_filter_name_1  =  cms.untracked.InputTag("hltL1NonIsoHLTNonIsoSingleElectronEt22TighterCaloIdIsolTrackIsolFilter","",HLT_process_name)
+
+
 
 
 process.wenuFilter = cms.EDFilter('WenuCandidateFilter',
@@ -199,15 +260,17 @@ process.wenuFilter = cms.EDFilter('WenuCandidateFilter',
                                   # demand ecal driven electron:
                                   useEcalDrivenElectrons = cms.untracked.bool(True),
                                   # demand offline spike cleaning with the Swiss Cross criterion:
-                                  useSpikeRejection = cms.untracked.bool(True),
+                                  useSpikeRejection = cms.untracked.bool(False),
                                   spikeCleaningSwissCrossCut = cms.untracked.double(0.95),
                                   # demand geometrically matched to an HLT object with ET>15GeV
                                   useTriggerInfo = cms.untracked.bool(True),
                                   electronMatched2HLT = cms.untracked.bool(True),
                                   electronMatched2HLT_DR = cms.untracked.double(0.1),
-                                  useHLTObjectETCut = cms.untracked.bool(True),
-                                  hltObjectETCut = cms.untracked.double(15.),
-                                  useExtraTrigger = cms.untracked.bool(False),
+                                  useHLTObjectETCut = cms.untracked.bool(False),
+                                  # hltObjectETCut = cms.untracked.double(0),
+                                  useExtraTrigger = cms.untracked.bool(True),
+                                  vHltpathExtra = cms.untracked.vstring(HLT_path_name_1),
+                                  vHltpathFilterExtra = cms.untracked.VInputTag(HLT_filter_name_1),
                                   # ET Cut in the SC
                                   ETCut = cms.untracked.double(20.),                                  
                                   METCut = cms.untracked.double(0.),
@@ -278,11 +341,6 @@ process.plotter = cms.EDAnalyzer('WenuPlots',
                                  storeAllSecondElectronVariables = cms.untracked.bool(True),
                                  )
 #
-# if you run on data then you have to do misalignment  corrections first!!!
-# not to be used with MC!!
-process.load("RecoEgamma.EgammaTools.correctedElectronsProducer_cfi")
-process.p = cms.Path( process.gsfElectrons*process.ourJetSequence*
-                      process.patDefaultSequence*process.wenuFilter*process.plotter)
-#process.p = cms.Path( process.ourJetSequence * process.patDefaultSequence +process.wenuFilter + process.plotter)
+process.p = cms.Path( process.ourJetSequence * process.patDefaultSequence +process.wenuFilter + process.plotter)
 
 
